@@ -1,11 +1,8 @@
-defaults: &defaults
-	mailto: "artem@melchakovvv.ru"
-
 development:
-  <<: *defaults
+  mailto: "artem@melchakovvv.ru"
 
 test:
-  <<: *defaults
+  mailto: "artem@melchakovvv.ru"
 
 production:
-  <<: *defaults
+  mailto: "artem@melchakovvv.ru"

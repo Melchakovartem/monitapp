@@ -6,22 +6,26 @@ class HttpMonitService
       raise "Please use correct url" unless destination =~ URI::regexp
       set_connection(destination)
       set_current_status
+      
+      begin
+        @connection.start
 
-      @connection.start
-
-      loop do
-        get = Net::HTTP::Get.new('/')
-        http_code = @connection.request(get).code
-        check_status(http_code)
+        loop do
+          get = Net::HTTP::Get.new('/')
+          http_code = @connection.request(get).code
+          check_status(http_code)
+        end
+      rescue
+        NotificationMailer.tcp_down
       end
     end
 
     def check_status(http_code)
       if http_code != "200" and @current_status == "200"
-        puts "fail"
+        NotificationMailer.service_down(http_code).deliver_now
         @current_status = http_code
       elsif http_code == "200" and @current_status != "200"
-        puts "ok"
+        NotificationMailer.service_up.deliver_now
         @current_status = http_code
       end
     end

@@ -1,0 +1,11 @@
+defaults: &defaults
+	mailto: "artem@melchakovvv.ru"
+
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+
+production:
+  <<: *defaults

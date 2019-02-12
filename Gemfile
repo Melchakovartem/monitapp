@@ -8,6 +8,7 @@ gem 'rails', '~> 5.2.2'
 gem 'sqlite3', '~> 1.3.6'
 gem 'puma', '~> 3.11'
 gem 'sidekiq'
+gem 'settingslogic'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

@@ -48,11 +48,9 @@ class HttpMonitService
     def check_status(http_code)
       if http_code != "200" and @current_status == "200"
         NotificationMailer.service_down(http_code).deliver_now
-        puts "down"
         @current_status = http_code
       elsif http_code == "200" and @current_status != "200"
         NotificationMailer.service_up.deliver_now
-        puts "up"
         @current_status = http_code
       end
     end

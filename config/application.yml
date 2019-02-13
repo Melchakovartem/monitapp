@@ -1,8 +1,8 @@
 development:
-  mailto: "artem@melchakovvv.ru"
+  mailto: "test@example.com"
 
 test:
-  mailto: "artem@melchakovvv.ru"
+  mailto: "test@example.com"
 
 production:
-  mailto: "artem@melchakovvv.ru"
+  mailto: "test@example.com"

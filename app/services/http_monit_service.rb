@@ -1,36 +1,35 @@
 class HttpMonitService
-  class << self
-    require 'net/http'
+  require 'net/http'
 
-    def call(destination)
-      raise "Please use correct url" unless destination =~ URI::regexp
-      set_connection(destination)
-      set_current_status
+  attr_reader :connection, :current_status
+
+  def initialize
+    @connection, @current_status = nil
+  end
+
+  def self.call
+    new.call
+  end
+
+  def call(destination)
+    raise OpenURI::HTTPError.new("Please use correct url", destination) unless destination =~ URI::regexp
+    set_connection(destination)
+    set_current_status
       
-      begin
-        @connection.start
+    begin
+      @connection.start
 
-        loop do
-          get = Net::HTTP::Get.new('/')
-          http_code = @connection.request(get).code
-          check_status(http_code)
-        end
-      rescue
-        NotificationMailer.tcp_down.deliver_now
-        puts "tcp down"
+      loop do
+        get = Net::HTTP::Get.new('/')
+        http_code = @connection.request(get).code
+        check_status(http_code)
       end
+    rescue
+      NotificationMailer.tcp_down.deliver_now
     end
+  end
 
-    def check_status(http_code)
-      if http_code != "200" and @current_status == "200"
-        NotificationMailer.service_down(http_code).deliver_now
-        puts "down"
-        @current_status = http_code
-      elsif http_code == "200" and @current_status != "200"
-        NotificationMailer.service_up.deliver_now
-        @current_status = http_code
-      end
-    end
+  private
 
     def set_connection(destination)
       uri = URI.parse(destination)
@@ -43,7 +42,18 @@ class HttpMonitService
     def set_current_status
       get = Net::HTTP::Get.new('/')
       @current_status = @connection.request(get).code
-      raise "Service not available" if @current_status != "200"
+      raise OpenURI::HTTPError.new("Service not availbale", "") if @current_status != "200"
     end
-  end
+
+    def check_status(http_code)
+      if http_code != "200" and @current_status == "200"
+        NotificationMailer.service_down(http_code).deliver_now
+        puts "down"
+        @current_status = http_code
+      elsif http_code == "200" and @current_status != "200"
+        NotificationMailer.service_up.deliver_now
+        puts "up"
+        @current_status = http_code
+      end
+    end
 end
